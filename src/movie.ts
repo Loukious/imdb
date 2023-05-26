@@ -13,10 +13,10 @@ export default class Movie {
   private runtime?: string
   private description?: string
   private rating?: number
-  private ratingCount?: number
+  private ratingCount?: string
   private director?: string
   private metascore?: number
-  private writer?: string
+  private writers?: Array<string>
   private cast?: Array<string>
 
   constructor (id: string) {
@@ -27,36 +27,27 @@ export default class Movie {
     let r = await request(`${endpoint}/title/${this.id}/`)
     const $ = cheerio.load(r)
 
-    const plotSummaryWrapper = $('#title-overview-widget > div.plot_summary_wrapper')
-    const vital = $('#title-overview-widget > div.vital')
+    this.title = $('h1[data-testid="hero__pageTitle"]').text().trim()
 
-    const titleBlock = vital.find('div.title_block')
-    const titleBar = titleBlock.find('div > div.titleBar')
-    const titleWrapper = titleBar.find('div.title_wrapper')
-    const plotSummary = plotSummaryWrapper.find('div.plot_summary')
-
-    this.title = titleWrapper.find('h1').text().trim()
-
-    let maybeOriginalTitle = titleWrapper.find('div.originalTitle').text().trim()
-    this.originalTitle = maybeOriginalTitle !== '' ? maybeOriginalTitle.replace(/\(original title\)/g, '') : undefined
-
-    let poster = vital.find('div.slate_wrapper > div.poster > a > img').attr('src')
+    let poster = $('div[data-testid="hero-media__poster"] > div.ipc-media__img > img').attr('src')
     if (poster !== undefined) { this.poster = poster.trim() } else { this.poster = undefined }
 
-    let contentRating = titleWrapper.find('div > meta').attr('content')
-    if (contentRating !== undefined) { this.contentRating = contentRating.trim() } else { this.contentRating = undefined }
+    this.contentRating = $('h1[data-testid="hero__pageTitle"]').parent().children().last().find('a').last().text().trim()
+    this.year = $('h1[data-testid="hero__pageTitle"]').parent().children().last().find('a').first().text().trim()
+    this.runtime = $('h1[data-testid="hero__pageTitle"]').parent().children().last().find('li').last().text().trim()
+    this.description = $('p[data-testid="plot"] > span[data-testid="plot-l"]').text().trim()
+    this.rating = parseInt($('div[data-testid="hero-rating-bar__aggregate-rating__score"] > span').text().split("/")[0])
+    this.ratingCount = $('div[data-testid="hero-rating-bar__aggregate-rating__score"]').first().parent().children().last().text()
+    this.director = $('li[data-testid="title-pc-principal-credit"] > div > ul > li > a').first().text().trim()
+    this.metascore = parseInt($('span[class="score-meta"]').text().trim())
 
-    this.year = $('#titleYear > a').text().trim()
-    this.runtime = titleWrapper.find('div > time').text().trim()
-    this.description = plotSummary.find('div.summary_text').text().trim()
-    this.rating = parseInt(titleBlock.find('div.ratings_wrapper > div.imdbRating > div.ratingValue > strong > span').text().trim())
-    this.ratingCount = parseInt(titleBlock.find('div.ratings_wrapper > div.imdbRating > a > span').text().replace(/,/g, ''))
-    this.director = plotSummary.find('div:nth-child(2) > span > a > span').text().trim()
-    this.metascore = parseInt(plotSummaryWrapper.find('div.titleReviewBar > div:nth-child(1) > a > div > span').text().trim())
-    this.writer = plotSummary.find('div:nth-child(3) > span:nth-child(2) > a > span').text().trim()
+    let writers: Array<string> = [ ]
+    let writersElements = $('li[data-testid="title-pc-principal-credit"]:nth-child(2) > div').first().find('ul > li > a')
+    writersElements.each(function (this: any) { writers.push($(this).text().trim()) })
+    this.writers = writers
 
     let cast: Array<string> = [ ]
-    let castElements = $('div#main_bottom > div#titleCast > table.cast_list  tr > td.itemprop > a > span')
+    let castElements = $('a[data-testid="title-cast-item__actor"]')
     castElements.each(function (this: any) { cast.push($(this).text().trim()) })
     this.cast = cast
 
@@ -107,8 +98,8 @@ export default class Movie {
     return this.metascore
   }
 
-  getWriter () {
-    return this.writer
+  getWriters () {
+    return this.writers
   }
 
   getCast () {

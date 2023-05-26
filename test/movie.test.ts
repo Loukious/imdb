@@ -14,7 +14,7 @@ describe('Movie', async () => {
   })
 
   it('has a title', () => {
-    expect(movie.getTitle()).toBe('The Martian (2015)')
+    expect(movie.getTitle()).toBe('The Martian')
   })
 
   it('may have an original title', () => {
@@ -30,7 +30,7 @@ describe('Movie', async () => {
   })
 
   it('has runtime', () => {
-    expect(movie.getRuntime()).toBe('2h 24min')
+    expect(movie.getRuntime()).toBe('2h 24m')
   })
 
   it('has description', () => {
@@ -57,8 +57,8 @@ describe('Movie', async () => {
     expect(movie.getMetascore()).toBe(80)
   })
 
-  it('has writer', () => {
-    expect(movie.getWriter()).toBe('Drew Goddard')
+  it('has writers', () => {
+    expect(movie.getWriters()).toEqual(["Drew Goddard", "Andy Weir"])
   })
 
   it('has cast', () => {
