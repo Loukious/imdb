@@ -58,7 +58,7 @@ describe('Movie', async () => {
   })
 
   it('has writers', () => {
-    expect(movie.getWriters()).toEqual(["Drew Goddard", "Andy Weir"])
+    expect(movie.getWriters()).toEqual(['Drew Goddard', 'Andy Weir'])
   })
 
   it('has cast', () => {

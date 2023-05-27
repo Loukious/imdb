@@ -36,7 +36,7 @@ export default class Movie {
     this.year = $('h1[data-testid="hero__pageTitle"]').parent().children().last().find('a').first().text().trim()
     this.runtime = $('h1[data-testid="hero__pageTitle"]').parent().children().last().find('li').last().text().trim()
     this.description = $('p[data-testid="plot"] > span[data-testid="plot-l"]').text().trim()
-    this.rating = parseInt($('div[data-testid="hero-rating-bar__aggregate-rating__score"] > span').text().split("/")[0])
+    this.rating = parseInt($('div[data-testid="hero-rating-bar__aggregate-rating__score"] > span').text().split('/')[0])
     this.ratingCount = $('div[data-testid="hero-rating-bar__aggregate-rating__score"]').first().parent().children().last().text()
     this.director = $('li[data-testid="title-pc-principal-credit"] > div > ul > li > a').first().text().trim()
     this.metascore = parseInt($('span[class="score-meta"]').text().trim())
